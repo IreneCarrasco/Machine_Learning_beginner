@@ -1,0 +1,14 @@
+# Import libraries and modules
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+plt.rcParams['figure.figsize'] = (16, 9)
+plt.style.use('ggplot')
+from sklearn.decomposition import PCA 
+from sklearn.preprocessing import StandardScaler
+
+# Import the dataset from sklearn
+from sklearn.datasets import load_breast_cancer
+cancer = load_breast_cancer()
+
