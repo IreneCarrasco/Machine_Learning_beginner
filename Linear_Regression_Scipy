@@ -1,0 +1,39 @@
+# This scripts shows a linear regression from a data series and gives an interpolation from a certain data.
+# Random numbers have been used as input data as I know there should not be correlation.
+# Link to original website: w3schools.com/python/python_ml_linear_regression.asp
+
+# Import libraries and methods
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy import stats
+
+# Input data
+# Collection of 100 random integers as variable x
+x=np.random.randint(2, 20, size=100) 
+# Collection of 100 random integers as variable y
+y=np.random.randint(0, 50, size=100) 
+print(x, y)
+
+# Key parameters from linear regression
+slope, intercept, r, p, std_err = stats.linregress(x, y)
+
+# Function definition. This will interpolate a result "y" for an input "x"
+def myfunc(x):
+  return slope * x + intercept
+  
+# Plot parameters
+# Create a list with the output results (map) from applying myfunc with x values. This list is variable y in the scatter plot
+# map() function returns a map object(which is an iterator) of the results after applying the given function to each item of a given iterable (list, tuple etc.)
+mymodel = list(map(myfunc, x))
+
+plt.scatter(x, y)
+plt.plot(x, mymodel)
+plt.show()
+
+# Correlation coefficient
+# Take r from slope, intercept, r, p, std_err = stats.linregress(x, y)
+print(r)
+
+# From myfunc, we can estimate an output value for a certain input 
+expected = myfunc(10)
+print(expected)
