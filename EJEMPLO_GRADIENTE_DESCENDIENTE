@@ -1,0 +1,45 @@
+# Importamos las librerías
+import numpy as np
+import matplotlib.pyplot as plt
+from random import randint
+from numpy import linspace
+
+# Datos iniciales o condiciones iniciales del problema
+x_inicial = randint(1, 10) # En el tutorial hay un error en esta línea. Puede ser por actualización de la librería o algo
+alpha = 0.3
+n_iteraciones = 15
+
+# Creamos dos listas
+iteraciones = [] # Almacena el número de la iteración
+Valor_y = [] # Almacena el resultado de ejecutar el gradiente descendente en cada iteración
+
+# Algoritmo para el gradiente descendente
+x = x_inicial
+for i in range(n_iteraciones):
+	print('------------------------')
+	print('iteración ', str(i+1))
+
+	# Calculamos el gradiente o derivada primera de la función sobre la que vamos a realizar el algoritmo
+	gradiente = 2*x
+
+	# Actualización del valor de "x" usando gradiente descendente
+	x = x - alpha*gradiente
+
+	# Almacenar iteración y valor correspondiente
+	Valor_y.append(x**2 + 1)
+	iteraciones.append(i+1)
+  
+  # Resultados de la aplicación del algoritmo gradiente descendente
+plt.subplot(1,2,1)
+plt.plot(iteraciones,Valor_y)
+plt.xlabel('Iteración')
+plt.ylabel('y')
+
+X = linspace(-5,5,100)
+Y = X**2 + 1
+plt.subplot(1,2,2)
+plt.plot(X,Y,0.0,1.0,'ro')
+plt.xlabel('x')
+plt.ylabel('y')
+
+plt.show()
