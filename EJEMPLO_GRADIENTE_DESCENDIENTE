@@ -43,3 +43,6 @@ plt.xlabel('x')
 plt.ylabel('y')
 
 plt.show()
+
+Fuente
+https://www.codificandobits.com/blog/tutorial-gradiente-descendente-en-python/
