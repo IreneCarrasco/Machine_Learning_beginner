@@ -1,0 +1,103 @@
+# Importamos las librerías
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+# Módulos de Keras
+from keras.models import Sequential # para crear el contenedor del modelo.
+from keras.layers import Dense # para especificar que el modelo realizará una Regresión Logística sobre los datos
+from keras.optimizers import SGD # para usar la entropía cruzada como función de error y el Gradiente Descendente como método de optimización.
+
+# Lectura y visualización de los datos
+
+# Carga de datos 
+datos = pd.read_csv('dataset.csv', sep=",") # Hay que descargar el dataset del directorio de github del autor.
+# URL: https://github.com/codificandobits/Regresion_Logistica_en_Keras
+# En este ejemplo el autor ha trabajado como si los datos ya estuvieran en el disco duro. Podemos intentar obtener los datos con una función de csv que trabaja con las url
+
+# En este punto también podemos añadir un pd.describe del dataset para ver qué es lo que tenemos
+
+# Creación de variables de entrada y salida
+X = datos.values[:,0:2] # Tiene dos columnas que se corresponden con las características x1 y x2
+Y = datos.values[:,2] # Contiene la categoría a la que pertenece cada uno de los datos; 0 ó 1
+
+# Visualización de los datos
+# Identificamos cada categoría de datos. Yo le cambiaría el nombre de las variables. Comparar con la otra regresión logística que tengo hecha
+idx0 = np.where(Y==0) # Datos de la variable Y en los que hemos tenido resultado 0
+idx1 = np.where(Y==1) # Datos de la variable Y en los que hemos tenido resultado 1
+# Asignamos un color diferente a cada categoría para representar los valores
+# La representación gráfica la realizamos con un diagrama de dispersión
+plt.scatter(X[idx0,0],X[idx0,1],color='red',label='Categoría: 0')
+plt.scatter(X[idx1,0],X[idx1,1],color='gray',label='Categoría: 1')
+plt.xlabel('$x_1$') # Comprobar si $ actúa como \ en Matlab cuando quería poner letras griegas o subíndices en las leyendas de las gráficas
+plt.ylabel('$x_2$')
+plt.legend(bbox_to_anchor=(0.765,0.6),fontsize=8,edgecolor='black')
+plt.show()
+
+# Creación del modelo de regresión
+np.random.seed(1) # para garantizar la reproducibilidad de los resultados en diferentes computadores
+input_dim = X.shape[1]  # Dimensión: 2
+output_dim = 1          # Dimensión: 1
+
+modelo = Sequential() # Crear el contenedor del modelo
+modelo.add(Dense(output_dim, input_dim = input_dim, activation='sigmoid')) # Se elige la función de activación sigmoide
+
+# hacemos uso del módulo SGD en conjunto con el método compile para definir el optimizador (Gradiente Descendente) y la pérdida a usar (entropía cruzada)
+sgd = SGD(lr=0.2) # Tasa de aprendizaje (learning rate = lr) se ha elegido 0.2
+modelo.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy']) # metrics=accuracy para medir el desempeño del modelo
+
+# En este  caso usaremos un total de 1000 iteraciones y un batch_size igual a la cantidad total de datos (100)
+num_epochs = 1000
+batch_size = X.shape[0]
+
+# realizamos el entrenamiento usando el método fit, almacenando los resultados de cada iteración en una variable (historia) para poder graficarlos posteriormente
+historia = modelo.fit(X, Y, epochs=num_epochs, batch_size=batch_size, verbose=2)
+
+# Proceso de entrenamiento
+# Comportamiento de la pérdida
+plt.subplot(1,2,1)
+plt.plot(historia.history['loss'])
+plt.ylabel('Pérdida')
+plt.xlabel('Epoch')
+plt.title('Comportamiento de la pérdida')
+# Comportamiento de la precisión
+plt.subplot(1,2,2)
+plt.plot(historia.history['acc'])
+plt.ylabel('Precisión')
+plt.xlabel('Epoch')
+plt.title('Comportamiento de la precisión')
+plt.show()
+
+# Dibujo de la frontera de precisión
+# Se traza esta frontera a creando la función dibujar_frontera
+def dibujar_frontera(X,Y,modelo,titulo):
+    # Valor mínimo y máximo y rellenado con ceros
+    x_min, x_max = X[:, 0].min() - .5, X[:, 0].max() + .5
+    y_min, y_max = X[:, 1].min() - .5, X[:, 1].max() + .5
+    h = 0.01
+
+    # Grilla de puntos
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+    # Predecir categorías para cada punto en la gruilla
+    Z = modelo.predict_classes(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+
+    fig = plt.figure()
+    plt.contourf(xx, yy, Z, cmap=plt.cm.Set1, alpha=0.8)
+
+    idx0 = np.where(Y==0)
+    idx1 = np.where(Y==1)
+    plt.scatter(X[idx0,0],X[idx0,1],color='red', edgecolor='k', label='Categoría: 0')
+    plt.scatter(X[idx1,0],X[idx1,1],color='gray',edgecolor='k', label='Categoría: 1')
+    plt.legend(bbox_to_anchor=(0.765,0.6),fontsize=8,edgecolor='black')
+
+    plt.xlim(xx.min(), xx.max())
+    plt.ylim(yy.min(), yy.max())
+    plt.title(titulo)
+
+    plt.xlabel('$x_1$')
+    plt.ylabel('$x_2$')
+    plt.show()
+    
+    Fuente 
+    https://www.codificandobits.com/blog/tutorial-regresion-logistica-python-keras/
